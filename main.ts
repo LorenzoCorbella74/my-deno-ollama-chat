@@ -23,22 +23,19 @@ let top_k = 40;
 let presence_penalty = 0;
 let frequency_penalty = 0; */
 
-function Line(text:string){
-  Deno.stdout.write(new TextEncoder().encode(text));
-}
-
 // Available commands
 function showCommands() {
-  Line(green("/help           - Show available commands.\n"));
-  Line(green("/list           - Show available models.\n"));
-  Line(green("/system <text>  - Set the content of the system prompt and reset messages.\n"));
-  Line(green("/save <name>    - Save the current chat with the specified name.\n"));
-  Line(green("/load           - Load a saved chat.\n"));
-  Line(green("/current        - Show the currently used model.\n"));
-  Line(green("/clear          - Reset the chat history and default system prompt and params\n"));
-  Line(green("/history        - Show chat history.\n"));
-  Line(green("/params         - Set the temperature and num_ctx interactively.\n"));
-  Line(green("/bye            - Exit the chat.\n"));
+  console.log(green("/help           - Show available commands."));
+  console.log(green("/list           - Show available models."));
+  console.log(green("/system <text>  - Set the content of the system prompt and reset messages."));
+  console.log(green("/save <name>    - Save the current chat with the specified name."));
+  console.log(green("/load           - Load a saved chat."));
+  console.log(green("/current        - Show the currently used model."));
+  console.log(green("/clear          - Reset the chat history and default system prompt and params"));
+  console.log(green("/history        - Show chat history."));
+  console.log(green("/params         - Set the temperature and num_ctx interactively."));
+  console.log(green("/bye            - Exit the chat.\n"));
+  console.log();
 }
 
 // List available models
@@ -186,6 +183,7 @@ async function chatLoop() {
     });
     chatLoop(); // Resume the chat loop
   } else if (input === "/help") {
+    console.log(blue("\nHere are the available commands:\n"));
     showCommands(); // Show available commands
     chatLoop();
   } else if (input === "/list") {
@@ -204,7 +202,7 @@ async function chatLoop() {
     chatLoop();
   } else if (input === "/clear") {
     console.log(blue(`Reset the chat history to default system prompt and params.`));
-    messages = [SYSTEM_PROMPT]; // Reset messages with the new SYSTEM_PROMPT
+    messages = [SYSTEM_PROMPT]; 
     currentTemperature = temperature;
     currentNumCtx = num_ctx;
     // currentMaxTokens = max_tokens;
@@ -213,7 +211,7 @@ async function chatLoop() {
     const newSystemPrompt = input.split(" ").slice(1).join(" ");
     if (newSystemPrompt) {
       SYSTEM_PROMPT.content = newSystemPrompt;
-      messages = [SYSTEM_PROMPT]; // Reset messages with the new SYSTEM_PROMPT
+      messages = [SYSTEM_PROMPT]; 
 
       console.log(green("SYSTEM_PROMPT successfully updated!"));
     } else {
@@ -222,7 +220,7 @@ async function chatLoop() {
     chatLoop();
   } else if (input === "/params") {
     // Prompt the user for temperature
-    const tempInput = prompt(green("Enter temperature (0-1, default is 0.7): "));
+    const tempInput = prompt(green("Enter temperature (0-1): "), '0.7');
     const newTemperature = parseFloat(tempInput || "");
 
     if (!isNaN(newTemperature) && newTemperature >= 0 && newTemperature <= 1) {
@@ -233,7 +231,7 @@ async function chatLoop() {
     }
 
     // Prompt the user for num_ctx
-    const ctxInput = prompt(green("Enter num_ctx (positive integer, default is 2048): "));
+    const ctxInput = prompt(green("Enter num_ctx (positive integer): "), '2048');
     const newNumCtx = parseInt(ctxInput || "");
 
     if (!isNaN(newNumCtx) && newNumCtx > 0) {
@@ -250,7 +248,7 @@ async function chatLoop() {
 }
 
 // Show available commands at the start
-Line(blue("Welcome to my Deno Ollama chat!\n\nHere are the available commands:\n"));
+console.log(blue("Welcome to my Deno Ollama chat!\n\nHere are the available commands:\n"));
 
 showCommands();
 await listModels();
