@@ -35,7 +35,7 @@ function showCommands() {
   Line(green("/save <name>    - Save the current chat with the specified name.\n"));
   Line(green("/load           - Load a saved chat.\n"));
   Line(green("/current        - Show the currently used model.\n"));
-  Line(green("/clear          - Reset the chat history and default system prompt.\n"));
+  Line(green("/clear          - Reset the chat history and default system prompt and params\n"));
   Line(green("/history        - Show chat history.\n"));
   Line(green("/params         - Set the temperature and num_ctx interactively.\n"));
   Line(green("/bye            - Exit the chat.\n"));
@@ -203,8 +203,11 @@ async function chatLoop() {
     console.log(blue(`Currently used model: ${MODEL}`));
     chatLoop();
   } else if (input === "/clear") {
-    console.log(blue(`Reset the chat history to default system prompt.`));
+    console.log(blue(`Reset the chat history to default system prompt and params.`));
     messages = [SYSTEM_PROMPT]; // Reset messages with the new SYSTEM_PROMPT
+    currentTemperature = temperature;
+    currentNumCtx = num_ctx;
+    // currentMaxTokens = max_tokens;
     chatLoop();
   } else if (input?.startsWith("/system")) {
     const newSystemPrompt = input.split(" ").slice(1).join(" ");
