@@ -9,8 +9,19 @@ const SYSTEM_PROMPT = {
   content:
     "You are a helpful AI assistant called MAX. Reply from now on in Italian even if the requests are in other languages.",
 };
+const temperature = 0.7;
+const num_ctx = 2048;
+const max_tokens = 2048;
+
 let MODEL = "llama3.2:latest";
 let messages: Message[] = [SYSTEM_PROMPT];
+let currentTemperature = temperature;
+let currentNumCtx = num_ctx;
+let currentMaxTokens = max_tokens;
+/* let top_p = 0.95;
+let top_k = 40;
+let presence_penalty = 0;
+let frequency_penalty = 0; */
 
 function Line(text:string){
   Deno.stdout.write(new TextEncoder().encode(text));
@@ -25,7 +36,8 @@ function showCommands() {
   Line(green("/load           - Load a saved chat.\n"));
   Line(green("/current        - Show the currently used model.\n"));
   Line(green("/clear          - Reset the chat history and default system prompt.\n"));
-  Line(green("/history        - Show chat history. \n"));
+  Line(green("/history        - Show chat history.\n"));
+  Line(green("/params         - Set the temperature and num_ctx interactively.\n"));
   Line(green("/bye            - Exit the chat.\n"));
 }
 
@@ -125,6 +137,15 @@ async function chatCompletion(text: string) {
     const response = await ollama.chat({
       model: MODEL,
       stream: true,
+      options: {
+        temperature: currentTemperature,
+        // top_p,
+        // top_k,
+        // presence_penalty,
+        // frequency_penalty,
+        num_ctx: currentNumCtx,
+        // num_predict: currentMaxTokens,
+      },
       messages: [...messages, userMessage],
     });
     // Streaming response
@@ -190,11 +211,36 @@ async function chatLoop() {
     if (newSystemPrompt) {
       SYSTEM_PROMPT.content = newSystemPrompt;
       messages = [SYSTEM_PROMPT]; // Reset messages with the new SYSTEM_PROMPT
+
       console.log(green("SYSTEM_PROMPT successfully updated!"));
     } else {
       console.log(red("Error: specify valid content for the SYSTEM_PROMPT."));
     }
     chatLoop();
+  } else if (input === "/params") {
+    // Prompt the user for temperature
+    const tempInput = prompt(green("Enter temperature (0-1, default is 0.7): "));
+    const newTemperature = parseFloat(tempInput || "");
+
+    if (!isNaN(newTemperature) && newTemperature >= 0 && newTemperature <= 1) {
+      currentTemperature = newTemperature;
+      console.log(green(`Temperature successfully set to ${currentTemperature}`));
+    } else {
+      console.log(red("Invalid temperature. Please provide a value between 0 and 1."));
+    }
+
+    // Prompt the user for num_ctx
+    const ctxInput = prompt(green("Enter num_ctx (positive integer, default is 2048): "));
+    const newNumCtx = parseInt(ctxInput || "");
+
+    if (!isNaN(newNumCtx) && newNumCtx > 0) {
+      currentNumCtx = newNumCtx;
+      console.log(green(`num_ctx successfully set to ${currentNumCtx}`));
+    } else {
+      console.log(red("Invalid num_ctx. Please provide a positive integer."));
+    }
+
+    chatLoop(); // Resume the chat loop
   } else {
     chatCompletion(input!).then(() => chatLoop());
   }
