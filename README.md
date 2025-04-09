@@ -1,4 +1,5 @@
 # My Deno Ollama Chat
+![cli](./doc/my-deno_ollama_cli.png)
 
 Deno Ollama Chat is a terminal-based AI chat application built with Deno. It uses the [Ollama](https://ollama.com/) library to interact with AI models and provides a variety of commands to manage chat sessions, models, and history.
 
