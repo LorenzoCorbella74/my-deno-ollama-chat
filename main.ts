@@ -1,7 +1,7 @@
 import { blue, red, green, cyan, yellow, magenta } from "@std/fmt/colors";
-// import * as path from "https://deno.land/std@0.203.0/path/mod.ts";
-import * as path from "@std/path"
+import * as path from "@std/path";
 import ollama, { Message, ModelResponse } from "ollama";
+import { Spinner } from "@std/cli/unstable-spinner";
 
 // Defaults
 const SYSTEM_PROMPT = {
@@ -130,6 +130,9 @@ async function loadChat() {
 
 async function chatCompletion(text: string) {
   const userMessage = { role: "user", content: text };
+  const spinner = new Spinner();
+  spinner.start();
+
   try {
     const response = await ollama.chat({
       model: MODEL,
@@ -145,6 +148,9 @@ async function chatCompletion(text: string) {
       },
       messages: [...messages, userMessage],
     });
+
+    spinner.stop();
+
     // Streaming response
     Deno.stdout.write(new TextEncoder().encode(cyan("AI: ")));
     let aiReply = "";
@@ -155,12 +161,19 @@ async function chatCompletion(text: string) {
         const ts = (part.eval_count / part.eval_duration) * Math.pow(10, 9);
         const load_duration = part.load_duration / Math.pow(10, 9);
         const prompt_eval_duration = part.prompt_eval_duration / Math.pow(10, 9);
-        console.log(magenta(`\nToken/s: ${ts.toFixed(2)} - Load model: ${load_duration.toFixed(2)}s - Prompt eval: ${prompt_eval_duration.toFixed(2)}s`));
+        console.log(
+          magenta(
+            `\nToken/s: ${ts.toFixed(2)} - Load model: ${load_duration.toFixed(
+              2
+            )}s - Prompt eval: ${prompt_eval_duration.toFixed(2)}s`
+          )
+        );
       }
     }
     messages.push(userMessage);
     messages.push({ role: "assistant", content: aiReply });
   } catch (error) {
+    spinner.stop(); // Ensure the spinner stops in case of an error
     console.log(red("Error:"), error);
   }
 }

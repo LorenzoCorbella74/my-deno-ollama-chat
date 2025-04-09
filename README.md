@@ -23,3 +23,17 @@ After installing [Deno](https://deno.com/) and [Ollama](https://ollama.com/) clo
 > deno install 
 > deno task dev
 ```
+
+## Build
+To build the project, run the following command:
+
+```bash
+#macOS
+> deno compile --allow-net --allow-write --allow-read --target aarch64-apple-darwin main.ts
+
+#Cross compile for Windows with an icon
+deno compile --target x86_64-pc-windows-msvc --icon ./icon.ico main.ts
+```
+## License
+This project is licensed under the MIT License. 
+```
