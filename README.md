@@ -25,7 +25,7 @@ After installing [Deno](https://deno.com/) and [Ollama](https://ollama.com/) clo
 ```
 
 ## Build
-To build the project, run the following command:
+To build the project in an executable run the following command:
 
 ```bash
 #macOS
