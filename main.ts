@@ -43,16 +43,16 @@ async function listModels() {
   try {
     const list = await ollama.list(); // Assuming ollama has a listModels method
     const models = list.models;
-    console.log(blue("Available models:"));
+    console.log(blue("%cAvailable models:"),"text-decoration: underline");
     models.forEach((model: ModelResponse, index: number) => {
       console.log(`${index + 1}. ${model.name} - ${model.details.family} - ${model.details.parameter_size}`);
     });
 
-    const input = prompt(cyan("Select a model by entering the corresponding number: "));
+    const input = prompt(cyan("\nSelect a model by entering the corresponding number: "));
     const selectedIndex = parseInt(input || "") - 1;
     if (selectedIndex >= 0 && selectedIndex < models.length) {
       MODEL = models[selectedIndex].name;
-      console.log(green(`Selected model: ${MODEL}`));
+      console.log(green(`Selected model: ${MODEL}\n`));
     } else {
       console.log(red("Invalid selection. Default model retained."));
     }
@@ -196,7 +196,7 @@ async function chatLoop() {
     });
     chatLoop(); // Resume the chat loop
   } else if (input === "/help") {
-    console.log(blue("\nHere are the available commands:\n"));
+    console.log(blue("\n%cHere are the available commands:\n"),"text-decoration: underline");
     showCommands(); // Show available commands
     chatLoop();
   } else if (input === "/list") {
@@ -261,7 +261,10 @@ async function chatLoop() {
 }
 
 // Show available commands at the start
-console.log(blue("Welcome to my Deno Ollama chat!\n\nHere are the available commands:\n"));
-
+console.log(blue("%cWelcome to my Deno Ollama chat!\n"), "font-weight: bold");
+console.log(blue("%cHere are the available commands:"), "text-decoration: underline");
 showCommands();
+
+
+
 await listModels();
